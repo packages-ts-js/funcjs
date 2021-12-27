@@ -1,4 +1,4 @@
-import { IOptional } from ".";
+import { IOptional } from "./option";
 import { InnerLeft } from "./base/inner-left";
 import { InnerRight } from "./base/inner-right";
 import { None, Some } from "./option";
@@ -21,6 +21,14 @@ export class Left<L, R> extends InnerLeft<L, R> {
   unwrapRight(): R {
     return super.unwrapInnerRight;
   }
+
+  mapLeft<NL>(func: (value: L) => NL): Either<NL, R> {
+    return new Left(func(this.value));
+  }
+
+  mapRight<NR>(func: (value: R) => NR): Either<L, NR> {
+    return this as any;
+  }
 }
 
 export class Right<L, R> extends InnerRight<L, R> {
@@ -38,6 +46,14 @@ export class Right<L, R> extends InnerRight<L, R> {
 
   unwrapRight(): R {
     return super.unwrapInnerRight;
+  }
+
+  mapLeft<NL>(func: (value: L) => NL): Either<NL, R> {
+    return this as any;
+  }
+
+  mapRight<NR>(func: (value: R) => NR): Either<L, NR> {
+    return new Right(func(this.value));
   }
 }
 

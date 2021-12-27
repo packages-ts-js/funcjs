@@ -1,2 +1,2 @@
-export { Guards } from "./guards";
 export * from "./empty.guards";
+export * from "./validate.guards";

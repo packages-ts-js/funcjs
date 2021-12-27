@@ -1,3 +1,4 @@
+import { isEmpty } from "class-validator";
 import { BaseError } from "./errors/base-errors";
 import { ResultErrorInterface, Result, Fail, Ok } from "./result";
 
@@ -9,7 +10,7 @@ export interface IOptional<T> {
 }
 
 export function Optional<T>(value: T): IOptional<T> {
-  if (!value) return None;
+  if (isEmpty(value)) return None;
   return new Some(value);
 }
 
