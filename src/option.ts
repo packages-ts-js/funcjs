@@ -1,30 +1,23 @@
 import { isEmpty } from "class-validator";
-import { BaseError } from "./errors/base-errors";
 import { ResultErrorInterface, Result, Fail, Ok } from "./result";
 
-export interface IOptional<T> {
+export interface Maybe<T> {
   get isNone(): boolean;
   get isSome(): boolean;
   unwrap(): T;
   okOr<E extends ResultErrorInterface>(err: E): Result<T>;
 }
 
-export function Optional<T>(value: T): IOptional<T> {
-  if (isEmpty(value)) return None;
+export function Optional<T>(value: T): Maybe<T> {
+  if (isEmpty(value)) return Nothing;
   return new Some(value);
 }
 
-class OptionsError extends BaseError {
-  constructor(message: string) {
-    super({
-      message,
-      code: 9,
-      name: "OptionsError",
-    });
-  }
+export function Just<T>(value: T): Maybe<T> {
+  return new Some(value);
 }
 
-export class Some<T> implements IOptional<T> {
+class Some<T> implements Maybe<T> {
   constructor(private readonly value: T) {}
 
   get isNone(): boolean {
@@ -41,7 +34,7 @@ export class Some<T> implements IOptional<T> {
   }
 }
 
-export const None: IOptional<any> = {
+export const Nothing: Maybe<any> = {
   get isNone(): boolean {
     return true;
   },
@@ -51,7 +44,7 @@ export const None: IOptional<any> = {
   },
 
   unwrap() {
-    throw new OptionsError("Can't unwrapping 'None' value").throw();
+    throw new Error("Can't unwrapping 'None' value");
   },
 
   okOr<E extends ResultErrorInterface>(err: E): Result<any> {

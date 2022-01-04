@@ -1,7 +1,6 @@
-import { IOptional } from "./option";
 import { InnerLeft } from "./base/inner-left";
 import { InnerRight } from "./base/inner-right";
-import { None, Some } from "./option";
+import { Maybe, Just, Nothing } from "./option";
 
 export type Either<L, R> = Left<L, R> | Right<L, R>;
 
@@ -57,23 +56,12 @@ export class Right<L, R> extends InnerRight<L, R> {
   }
 }
 
-export class EitherComparer<L, R> {
-  constructor(
-    private readonly leftCmp: (value: L | R, left: L) => boolean = (v, l) =>
-      v === l,
-    private readonly rightCmp: (value: L | R, left: R) => boolean = (v, r) =>
-      v === r
-  ) {}
-
-  compare(value: L | R, left: L): Either<L, R>;
-  compare(value: L | R, left: L, right: R): IOptional<Either<L, R>>;
-  compare(value: L | R, left: L, right?: R): any {
-    if (!right)
-      return this.leftCmp(value, left) ? new Left(value) : new Right(value);
-
-    if (this.leftCmp(value, left)) return new Some(new Left(value));
-    if (this.rightCmp(value, right)) return new Some(new Right(value));
-
-    return None;
-  }
+export function EitherSelect<L, R>(
+  value: L | R,
+  isLeft: (value: L) => boolean,
+  isRight?: (value: R) => boolean
+): Maybe<Either<L, R>> {
+  if (isLeft(value as L)) return Just(new Left(value as L));
+  if (isRight && isRight(value as R)) return Just(new Right(value as R));
+  return Nothing;
 }

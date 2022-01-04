@@ -38,15 +38,23 @@ class ResultOk<T> {
     throw new Error("ResultError: this result is'nt error");
   }
 
-  map<TOther>(func: (value: T) => Result<TOther>): Result<TOther> {
+  map<TOther>(
+    func: (value: T) => Result<TOther>,
+    err: new (msg: string) => ResultErrorInterface = InternalServerError,
+    msg?: string
+  ): Result<TOther> {
     try {
       return func(this.value);
-    } catch (err) {
-      return Fail(new InternalServerError());
+    } catch (e) {
+      return Fail(new err(msg));
     }
   }
 
-  elseMap(func: () => Result<T>): Result<T> {
+  elseMap(
+    func: () => Result<T>,
+    err: new (msg: string) => ResultErrorInterface = InternalServerError,
+    msg?: string
+  ): Result<T> {
     return this;
   }
 
@@ -74,15 +82,23 @@ export class ResultFail<T> {
     return this.value;
   }
 
-  map<TOther>(func: (value: T) => Result<TOther>): Result<TOther> {
-    return new ResultFail(this.value);
+  map<TOther>(
+    func: (value: T) => Result<TOther>,
+    err: new (msg: string) => ResultErrorInterface = InternalServerError,
+    msg?: string
+  ): Result<TOther> {
+    return this as any;
   }
 
-  elseMap(func: () => Result<T>): Result<T> {
+  elseMap(
+    func: () => Result<T>,
+    err: new (msg: string) => ResultErrorInterface = InternalServerError,
+    msg?: string
+  ): Result<T> {
     try {
       return func();
-    } catch (err) {
-      return Fail(new InternalServerError());
+    } catch (e) {
+      return Fail(new err(msg));
     }
   }
 
